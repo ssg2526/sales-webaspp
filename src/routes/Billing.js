@@ -5,17 +5,22 @@ import Table from '../components/table';
 import {generateOrder, generateKot, updateSeatingData, generateInvoice} from '../utils/billingUtils'
 import { useLocation, useNavigate  } from "react-router-dom";
 // import MaterialTable from 'material-table';
-import { Col,Row, Container} from 'react-bootstrap'
+// import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import ListGroup from 'react-bootstrap/ListGroup'
+import ListGroupItem from 'react-bootstrap/ListGroupItem'
+import Button from 'react-bootstrap/Button'
 // import {useTable} from 'react-table';
 
 function Billing() {
     const [itemCode, setItemCode] = useState();
     const [itemName, setItemName] = useState("");
     const [itemData, setitemData] = useState([]);
-    const [kotTableData, setTableData] = useState([]);
     const [dob, setDob] = useState("");
     const { state } = useLocation();
-    const [orderValue, setOrderValue] = useState(state? state.seatingData.orderValue:{});
+    const [orderValue, setOrderValue] = useState(state.seatingData.orderValue);
+    const [kotTableData, setTableData] = useState([]);
 
     const navigate = useNavigate();
     const {categories, menuItems} = useContext(AppContext)
@@ -27,7 +32,24 @@ function Billing() {
         {title: "Price", field: 'price'},
     ];
 
-    // console.log(state.kotData)
+    useEffect(()=>{
+        let kotTable = [];
+        state.kotData.forEach((kot)=>{
+            kot.kotItems.forEach((kotItem)=>{
+                console.log(kotItem);
+                let oldKot = {};
+                menuItems.forEach((item)=>{
+                    if(kotItem.itemId === item.id){
+                        oldKot = Object.assign({}, item);
+                        oldKot["qty"] = kotItem["qty"];
+                        oldKot["price"] = kotItem["sellingPrice"];
+                        kotTable.push(oldKot);
+                    }
+                });
+            });
+        });
+        setTableData(kotTable);
+    },[]);
 
     function handleItemCode(e){
         setItemCode(e.target.value)
@@ -89,7 +111,6 @@ function Billing() {
         setOrderValue(orderValue+newItem["rate"]);
         var isItemExist = false;
         var newTableData = [];
-        console.log(kotTableData);
         kotTableData.forEach(dataItem => {
             console.log(dataItem);
             if(dataItem.itemCode === newItem.itemCode){
@@ -111,38 +132,41 @@ function Billing() {
 
     async function handleKotButton(){
         let order_id = state.seatingData.orderId;
-        if(! order_id){
+        if(! order_id && kotTableData.length){
             let res = await generateOrder()
             order_id = res.data.id;
         }
-        let kot_details = await generateKot(order_id, kotTableData);
-        let table_res = await updateSeatingData(state.seatingData, 1, order_id, orderValue);
-
-        navigate("/tables")
+        if(kotTableData.length){
+            let kot_details = await generateKot(order_id, kotTableData);
+            let table_res = await updateSeatingData(state.seatingData, 1, order_id, orderValue);
+            navigate("/tables")
+        }
     }
 
     async function handlePrintKotButton(){
         console.log("print kot")
         let order_id = state.seatingData.orderId;
-        if(! order_id){
+        if(! order_id && kotTableData.length){
             let res = await generateOrder()
             order_id = res.data.id;
         }
-        let kot_details = await generateKot(order_id, kotTableData);
-        let table_res = await updateSeatingData(state.seatingData, 1, order_id, orderValue);
-        console.log("table update: "+table_res.data);
-        navigate("/tables")
+        if(kotTableData.length){    
+            let kot_details = await generateKot(order_id, kotTableData);
+            let table_res = await updateSeatingData(state.seatingData, 1, order_id, orderValue);
+            console.log("table update: "+table_res.data);
+            navigate("/tables")
+        }
 
     }
 
     async function handleBillButton(){
         console.log("bill button clicked")
         let order_id = state.seatingData.orderId;
-        if(! order_id){
+        if(! order_id && kotTableData.length){
             let res = await generateOrder()
             order_id = res.data.id;
         }
-        if(kotTableData){
+        if(kotTableData.length){
             let kot_details = await generateKot(order_id, kotTableData);
             state.kotData.push(kot_details.data);
         }
@@ -170,28 +194,31 @@ function Billing() {
         navigate("/tables")
     }
 
+    function handleSettle(){
+        console.log("settled");
+    }
+
     function handleBack(){
         navigate("/tables")
     }
 
     return (
-        <Container>
             <Row>
-                <Col>
-                <div>
-                    <ul>
+                <Col sm={2}>
+                <div className='categ-list'>
+                    <ListGroup>
                         {categories.map((category, index) => {
                             return (
-                                <li key={category.name+index} onClick={()=>handleCatClick(category)}>
+                                <ListGroupItem className='categ-items' key={category.name+index} onClick={()=>handleCatClick(category)}>
                                     <span>{category.name}</span>
-                                </li>
+                                </ListGroupItem>
                             );
                         })}
-                    </ul>
+                    </ListGroup>
                 </div>
                 </Col>
 
-                <Col> 
+                <Col sm={4}> 
                 <input onChange={(e)=>handleItemCode(e)} 
                     onKeyUp={_handleKeyUp} id="itemCode" value={itemCode} placeholder='Item Code' type="text" />
                 <input onChange={(e)=>handleItemName(e)} 
@@ -200,15 +227,15 @@ function Billing() {
                 <div>
                     {itemData.map((item, index) => {
                         return (
-                            <div key={index} onClick={()=>handleItemClick(item)}>
-                                <span>{item.name}</span>
+                            <div className='item-card' key={index} onClick={()=>handleItemClick(item)}>
+                                {item.name}
                             </div>
                         );
                     })}
                 </div>
                 </Col>
 
-                <Col>
+                <Col sm={6}>
                 
                 <div>
                     <form>
@@ -220,23 +247,28 @@ function Billing() {
                     <div>
                         <Table data={kotTableData} columns={columns}/>
                     </div>
-                    <div>
-                        <span>{orderValue}</span>
+                    <div className='ord-total'>
+                        <span>Total : {orderValue}</span>
                     </div>
-                    <div>
+                    {state.seatingData.status !== 2? 
+                        (
                         <div>
-                            <button onClick={handleBillButton}>Print Bill</button>
+                            <div className='button-div'>
+                                <Button disabled={!kotTableData.length?true:false} onClick={handleBillButton}>Print Bill</Button>
+                            </div>
+                            <div className='button-div'>
+                                <Button disabled={!kotTableData.length?true:false} onClick={handleKotButton}>KOT</Button>
+                            </div>
+                            <div className='button-div'>
+                                <Button disabled={!kotTableData.length?true:false} onClick={handlePrintKotButton}>Print KOT</Button>
+                            </div>
+                            <div className='btn'>
+                                <Button onClick={handleBack}>Back</Button>
+                            </div>
                         </div>
-                        <div>
-                            <button onClick={handleKotButton}>KOT</button>
-                        </div>
-                        <div>
-                            <button onClick={handlePrintKotButton}>Print KOT</button>
-                        </div>
-                        <div>
-                            <button onClick={handleBack}>Back</button>
-                        </div>
-                    </div>
+                        ):
+                        <div></div>
+                    }
                 </div> 
                 </Col>
             
@@ -246,7 +278,6 @@ function Billing() {
             
             </div>  
             </Row>
-        </Container>
     )
 }
 

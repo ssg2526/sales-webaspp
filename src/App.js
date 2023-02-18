@@ -42,6 +42,7 @@ function App(){
                 if(!(table['type'] in tableView)){
                     tableView[`${table['type']}`] = [];
                 }
+                table["settleModal"] = false;
                 tableView[`${table['type']}`].push(table);
             });
             setTableState(tableView);

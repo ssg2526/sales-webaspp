@@ -236,3 +236,49 @@ span {
 .seating-view {
   padding-left: 100px;
 }
+
+.categ-list ul{
+  list-style-type: none;
+}
+
+.categ-items{
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.categ-items:hover{
+  background-color: #80858a;
+  color: #000;
+}
+
+.item-card{
+  display: inline-block;
+  width: 100px;
+  height: 60px;
+  margin-right: 10px;
+  margin-top: 10px;
+  border: 2px solid rgb(47, 46, 46);
+  border-radius: 6px;
+  padding-left: 4px;
+  cursor: pointer;
+}
+
+.item-card:hover{
+  background-color: #000;
+  color: white;
+}
+
+.ord-total{
+  font-weight: 600;
+  text-align: end;
+  padding-right: 6px;
+}
+
+.table{
+  height: 500px;
+}
+
+.button-div{
+  display: inline-block;
+  padding-right: 10px;
+}

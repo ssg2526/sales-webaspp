@@ -85,6 +85,15 @@ export function generateInvoice(items, order_id){
     return Axios.post(url, body, headers);
 }
 
+export function getInvoiceDataForOrder(order_id){
+    const url = "http://localhost:8080/sales-service/api/v1/getInvoiceByOrder"
+    const headers = {
+        'Content-Type': 'application/json',
+        'userId':'1'
+    }
+    return Axios.get(url, {params: {orderId: order_id}, headers: headers});
+}
+
 export function getAllKotsForOrder(order_id){
     const url = "http://localhost:8080/kot/api/v1/getKotByOrder"
     const headers = {
@@ -93,4 +102,26 @@ export function getAllKotsForOrder(order_id){
     }
 
     return Axios.get(url, {params: {orderId: order_id}, headers: headers})
+}
+
+export function settleBill(table, paymentMode){
+    const url = "http://localhost:8080/settlement/api/v1/settle"
+    const headers = {
+        'Content-Type': 'application/json',
+        'userId':'1'
+    }
+    let body = {}
+    body["orderId"] = table.orderId;
+    body["totalAmount"] = table.orderValue;
+    body["orgId"] = 1;
+    body["branchId"] = 1;
+    body["settlementDetails"] = [
+        {
+            "paymentMode": paymentMode,
+            "amount": table.orderValue
+        }
+    ]
+
+    return Axios.post(url, body, headers);
+
 }

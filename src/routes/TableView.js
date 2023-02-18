@@ -3,27 +3,48 @@ import React, { useContext, useEffect, useState, useMemo } from 'react';
 import { AppContext } from '../context';
 import { useNavigate } from "react-router-dom";
 import { getAllKotsForOrder } from '../utils/billingUtils';
+import SettleModalContent from '../components/settle-modal'
+import Modal from 'react-bootstrap/Modal'
+import Button from 'react-bootstrap/Button'
+import { Form } from "react-bootstrap";
 
 function TableView(){
 
     const navigate = useNavigate ();
 
     const {tableView} = useContext(AppContext)
+    const [openModal, setOpenModal] = useState(false);
+    const [currentSeating, setCurrentSeating] = useState({});
 
     async function handleTableClick(table){
         //make call to get kots
-        let kot_data = []
-        if(table.orderId){
-            let res = await getAllKotsForOrder(table.orderId);
-            kot_data = res.data;
-        }
-        navigate('billing', {
-            state: {
-                seatingData: table,
-                kotData: kot_data
+        console.log(table);
+        if(table.status !== 2){
+            let kot_data = []
+            if(table.orderId){
+                let res = await getAllKotsForOrder(table.orderId);
+                kot_data = res.data;
             }
-        })
+            navigate('billing', {
+                state: {
+                    seatingData: table,
+                    kotData: kot_data
+                }
+            });
+        }
+        
+    }
 
+    function handleSettleClick(table){
+        console.log("clicked");
+        setCurrentSeating(table);
+        console.log("table set");
+        if(openModal === true){
+            setOpenModal(false);
+        } else {
+            setOpenModal(true);
+        }
+        
     }
 
     return(
@@ -35,21 +56,28 @@ function TableView(){
                         <div className='card-layout'>
                             {tableView[type].map((table, index) =>{
                                 return (
-                                    <div key={index} onClick={()=>handleTableClick(table)} className={'card '+ 'st'+table.status}>
-                                        <div className='card-top'>
-                                            <span>{table.tableNo}</span>
+                                    <div key={index}>
+                                        <div onClick={()=>handleTableClick(table)} className={'card '+ 'st'+table.status}>
+                                            <div className='card-top'>
+                                                {table.tableNo}
+                                            </div>
+                                            <div className='card-body'>
+                                                {table.orderValue? '₹'+table.orderValue: null}
+                                            </div>
                                         </div>
-                                        <div className='card-body'>
-                                            <span>{table.orderValue? '₹'+table.orderValue: null}</span>
-                                        </div>
+                                        {table.status === 2? 
+                                        <div className='button-div'>
+                                            <Button onClick={(e)=>handleSettleClick(table)}>Settle</Button>
+                                        </div>:null
+                                        }
                                     </div>
                                 )
                             })}
                         </div>
                     </div>
                 )
-                
             })}
+            {openModal? <SettleModalContent show={openModal} table={currentSeating} />: null}
         </div>
     )
 }
