@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { AppContext } from '../context';
 import Axios from 'axios'
 import Table from '../components/table';
-import {generateOrder, generateKot, updateSeatingData, generateInvoice} from '../utils/billingUtils'
+import { doKot, doBill} from '../utils/billingUtils'
 import { useLocation, useNavigate  } from "react-router-dom";
 // import MaterialTable from 'material-table';
 // import Container from 'react-bootstrap/Container';
@@ -19,7 +19,7 @@ function Billing() {
     const [itemData, setitemData] = useState([]);
     const [dob, setDob] = useState("");
     const { state } = useLocation();
-    const [orderValue, setOrderValue] = useState(state.seatingData.orderValue);
+    const [orderValue, setOrderValue] = useState(state?state.seatingData.orderValue:null);
     const [kotTableData, setTableData] = useState([]);
 
     const navigate = useNavigate();
@@ -34,6 +34,7 @@ function Billing() {
 
     useEffect(()=>{
         let kotTable = [];
+        console.log(state);
         state.kotData.forEach((kot)=>{
             kot.kotItems.forEach((kotItem)=>{
                 console.log(kotItem);
@@ -131,46 +132,28 @@ function Billing() {
     }
 
     async function handleKotButton(){
-        let order_id = state.seatingData.orderId;
-        if(! order_id && kotTableData.length){
-            let res = await generateOrder()
-            order_id = res.data.id;
-        }
         if(kotTableData.length){
-            let kot_details = await generateKot(order_id, kotTableData);
-            let table_res = await updateSeatingData(state.seatingData, 1, order_id, orderValue);
+            let kot_resp = await doKot(kotTableData, state.seatingData.id);
+            state.seatingData = kot_resp.data;
+            console.log(kot_resp.data);
+            // let table_res = await updateSeatingData(state.seatingData, 1, order_id, orderValue);
             navigate("/tables")
         }
     }
 
     async function handlePrintKotButton(){
         console.log("print kot")
-        let order_id = state.seatingData.orderId;
-        if(! order_id && kotTableData.length){
-            let res = await generateOrder()
-            order_id = res.data.id;
-        }
-        if(kotTableData.length){    
-            let kot_details = await generateKot(order_id, kotTableData);
-            let table_res = await updateSeatingData(state.seatingData, 1, order_id, orderValue);
-            console.log("table update: "+table_res.data);
+        if(kotTableData.length){
+            let kot_resp = await doKot(kotTableData, state.seatingData.id);
+            state.seatingData = kot_resp.data;
+            console.log(kot_resp.data);
+            // let table_res = await updateSeatingData(state.seatingData, 1, order_id, orderValue);
             navigate("/tables")
         }
-
     }
 
     async function handleBillButton(){
         console.log("bill button clicked")
-        let order_id = state.seatingData.orderId;
-        if(! order_id && kotTableData.length){
-            let res = await generateOrder()
-            order_id = res.data.id;
-        }
-        if(kotTableData.length){
-            let kot_details = await generateKot(order_id, kotTableData);
-            state.kotData.push(kot_details.data);
-        }
-
         let itemSummary = [];
         let uniqueItems = {};
         state.kotData.forEach((kot)=>{
@@ -187,10 +170,8 @@ function Billing() {
         Object.keys(uniqueItems).forEach((itemId)=>{
             itemSummary.push(uniqueItems[itemId]);
         });
-
-        let invoice_res = await generateInvoice(itemSummary, order_id);
-        let billValue = invoice_res.data["billAmount"];
-        let table_res = await updateSeatingData(state.seatingData, 2, order_id, billValue);
+        let invoice_resp = await doBill(itemSummary, state.seatingData.id);
+        state.seatingData = invoice_resp.data;
         navigate("/tables")
     }
 
@@ -250,7 +231,7 @@ function Billing() {
                     <div className='ord-total'>
                         <span>Total : {orderValue}</span>
                     </div>
-                    {state.seatingData.status !== 2? 
+                    {(state && state.seatingData.status !== 2)? 
                         (
                         <div>
                             <div className='button-div'>

@@ -1,12 +1,9 @@
-import Axios from 'axios';
-import React, { useContext, useEffect, useState, useMemo } from 'react';
+import React, { useContext, useState } from 'react';
 import { AppContext } from '../context';
 import { useNavigate } from "react-router-dom";
 import { getAllKotsForOrder } from '../utils/billingUtils';
 import SettleModalContent from '../components/settle-modal'
-import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
-import { Form } from "react-bootstrap";
 
 function TableView(){
 
@@ -24,6 +21,7 @@ function TableView(){
             if(table.orderId){
                 let res = await getAllKotsForOrder(table.orderId);
                 kot_data = res.data;
+                console.log(kot_data);
             }
             navigate('billing', {
                 state: {

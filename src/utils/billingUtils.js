@@ -125,3 +125,72 @@ export function settleBill(table, paymentMode){
     return Axios.post(url, body, headers);
 
 }
+
+export function doKot(itemData, table_id){
+    const url = "http://localhost:8080/restaurant/api/v1/doKot"
+    const headers = {
+        'Content-Type': 'application/json',
+        'userId':'1'
+    }
+    let kot_body = {
+        "kotItems":[]
+    }
+    itemData.forEach((item)=>{
+        let kot_item = {};
+        kot_item["itemId"] = item.id;
+        kot_item["rate"] = item.rate;
+        kot_item["uom"] = item.uom;
+        kot_item["qty"] = item.qty;
+        kot_item["discountPer"] = item.discountPer;
+        kot_item["sellingPrice"] = item.price;
+        kot_body["kotItems"].push(kot_item);
+    });
+    return Axios.post(url, kot_body, {params:{tableId: table_id}, headers: headers})
+}
+
+export function doBill(items, table_id){
+    const url = "http://localhost:8080/restaurant/api/v1/doBill"
+    const headers = {
+        'Content-Type': 'application/json',
+        'userId':'1'
+    }
+
+    let invoiceItems = [];
+    let body = {};
+    let billAmount = 0.0;
+    items.forEach((item)=>{
+        let invoiceItem = {};
+        invoiceItem["itemId"] = item["itemId"];
+        invoiceItem["rate"] = item["rate"];
+        invoiceItem["uom"] = item["uom"];
+        invoiceItem["qty"] = item["qty"];
+        invoiceItem["discountPer"] = item["discountPer"];
+        invoiceItem["sellingPrice"] = item["sellingPrice"];
+        billAmount += item["sellingPrice"];
+        invoiceItems.push(invoiceItem);
+    });
+    body["billAmount"] = billAmount;
+    body["invoiceItems"] = invoiceItems;
+    body["discountPer"] = 0.0;
+
+    return Axios.post(url, body, {params:{tableId: table_id}, headers: headers});
+}
+
+export function settle(table, paymentMode){
+    const url = "http://localhost:8080/restaurant/api/v1/settle"
+    const headers = {
+        'Content-Type': 'application/json',
+        'userId':'1'
+    }
+    let body = {}
+    body["totalAmount"] = table.orderValue;
+    body["settlementDetails"] = [
+        {
+            "paymentMode": paymentMode,
+            "amount": table.orderValue
+        }
+    ]
+
+    return Axios.post(url, body, {params:{tableId: table.id}, headers: headers});
+
+}

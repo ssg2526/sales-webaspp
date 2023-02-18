@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
 import { Form } from "react-bootstrap";
-import {updateSeatingData, settleBill} from '../utils/billingUtils'
+import {updateSeatingData, settleBill, settle} from '../utils/billingUtils'
 
 function SettleModalContent({show, table}) {
     console.log("hahahhahahah");
@@ -18,14 +18,14 @@ function SettleModalContent({show, table}) {
         setShowModal(false);
     }
 
-    function handleShow(){
-        setShowModal(true);
-    }
+    // function handleShow(){
+    //     setShowModal(true);
+    // }
 
     async function handleSettleBill(){
         console.log(table)
-        let settleBillRes = await settleBill(table, modeOfPay);
-        let table_res = await updateSeatingData(table, 0, table.orderId, null);
+        let settleBillRes = await settle(table, modeOfPay);
+        // let table_res = await updateSeatingData(table, 0, table.orderId, null);
         setShowModal(false);
     }
 
