@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button'
 import { Form } from "react-bootstrap";
 import {updateSeatingData, settleBill, settle} from '../utils/billingUtils'
 
-function SettleModalContent({show, table}) {
+function SettleModalContent({show, table, reload}) {
     console.log("hahahhahahah");
     console.log(show);
     const [modeOfPay, setModeOfPay] = useState("CASH");
@@ -25,8 +25,8 @@ function SettleModalContent({show, table}) {
     async function handleSettleBill(){
         console.log(table)
         let settleBillRes = await settle(table, modeOfPay);
-        // let table_res = await updateSeatingData(table, 0, table.orderId, null);
         setShowModal(false);
+        reload();
     }
 
     return(

@@ -44,8 +44,8 @@
 
 .table {
 	border-collapse: collapse;
-	max-width: 900px;
-	width: 100%;
+	/* max-width: 900px; */
+	/* width: 100%; */
 }
 
 .table th, .table td {
@@ -274,9 +274,9 @@ span {
   padding-right: 6px;
 }
 
-.table{
+/* .table{
   height: 500px;
-}
+} */
 
 .button-div{
   display: inline-block;

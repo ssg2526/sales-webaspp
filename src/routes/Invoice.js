@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import Axios from 'axios'
-import Table from '../components/table';
+import MyTable from '../components/table';
+import {Table} from 'react-bootstrap';
+// import paginationFactory from "react-bootstrap-table2-paginator";
+
 // import MaterialTable from 'material-table';
 // import {useTable} from 'react-table';
 
@@ -53,7 +56,7 @@ function Invoice() {
                 <button>Search</button>
             </form>    
             <div>
-                <Table data={tableData} columns={columns}/>
+                <MyTable data={tableData} columns={columns}/>
             </div>
         </div>
     )

@@ -1,7 +1,9 @@
-function Table({data, columns}){
+import {Table} from 'react-bootstrap';
+
+function MyTable({data, columns}){
     // console.log(data);
     return (
-        <table className='table'>
+        <Table className='table'>
             <thead>
                 <tr>
                     {columns.map((item, index) => 
@@ -14,7 +16,7 @@ function Table({data, columns}){
                     <TableRow key={index} item={item} columns={columns}/>
                 )}
             </tbody>
-        </table>
+        </Table>
     )
 }
 
@@ -34,4 +36,4 @@ const TableRow = ({item, columns}) => {
     // </tr>
 }
 
-export default Table;
+export default MyTable;

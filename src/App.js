@@ -16,12 +16,9 @@ import Axios from 'axios';
 
 function App(){
 
-    const [tableView, setTableState] = useState({});
+    // const [tableView, setTableState] = useState({});
     const [categories, setCategories] = useState([]);
     const [menuItems, setMenuItems] = useState([]);
-
-
-    
 
     useEffect(()=>{
         const headers = {
@@ -33,20 +30,20 @@ function App(){
             setCategories(res.data);
         });
 
-        Axios.get("http://localhost:8080/table/api/v1/getAllTables", {headers: headers})
-        .then((res)=>{
-            console.log(res.data);
-            let tableStateData = res.data;
-            let tableView = {};
-            tableStateData.forEach(table => {
-                if(!(table['type'] in tableView)){
-                    tableView[`${table['type']}`] = [];
-                }
-                table["settleModal"] = false;
-                tableView[`${table['type']}`].push(table);
-            });
-            setTableState(tableView);
-        });
+        // Axios.get("http://localhost:8080/table/api/v1/getAllTables", {headers: headers})
+        // .then((res)=>{
+        //     console.log(res.data);
+        //     let tableStateData = res.data;
+        //     let tableView = {};
+        //     tableStateData.forEach(table => {
+        //         if(!(table['type'] in tableView)){
+        //             tableView[`${table['type']}`] = [];
+        //         }
+        //         table["settleModal"] = false;
+        //         tableView[`${table['type']}`].push(table);
+        //     });
+        //     setTableState(tableView);
+        // });
 
         Axios.get("http://localhost:8080/item-service/api/v1/all-items", {headers: headers})
         .then((res)=>{
@@ -108,7 +105,7 @@ function App(){
     ]);
 
     return (
-        <AppContext.Provider value={{tableView, categories, menuItems, setTableState}}>
+        <AppContext.Provider value={{categories, menuItems}}>
             <RouterProvider router={router} />
         </AppContext.Provider>
     )

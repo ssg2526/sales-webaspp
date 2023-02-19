@@ -148,7 +148,7 @@ export function doKot(itemData, table_id){
     return Axios.post(url, kot_body, {params:{tableId: table_id}, headers: headers})
 }
 
-export function doBill(items, table_id){
+export function doBill(items, table_id, customerDetails){
     const url = "http://localhost:8080/restaurant/api/v1/doBill"
     const headers = {
         'Content-Type': 'application/json',
@@ -169,10 +169,13 @@ export function doBill(items, table_id){
         billAmount += item["sellingPrice"];
         invoiceItems.push(invoiceItem);
     });
+    if(customerDetails["contact"]){
+        body["customerContact"] = customerDetails["contact"];
+    }
     body["billAmount"] = billAmount;
     body["invoiceItems"] = invoiceItems;
     body["discountPer"] = 0.0;
-
+    console.log(body);
     return Axios.post(url, body, {params:{tableId: table_id}, headers: headers});
 }
 

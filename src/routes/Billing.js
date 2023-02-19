@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { AppContext } from '../context';
 import Axios from 'axios'
-import Table from '../components/table';
+import MyTable from '../components/table';
 import { doKot, doBill} from '../utils/billingUtils'
 import { useLocation, useNavigate  } from "react-router-dom";
 // import MaterialTable from 'material-table';
@@ -19,7 +19,7 @@ function Billing() {
     const [itemData, setitemData] = useState([]);
     const [dob, setDob] = useState("");
     const { state } = useLocation();
-    const [orderValue, setOrderValue] = useState(state?state.seatingData.orderValue:null);
+    const [orderValue, setOrderValue] = useState(0.0);
     const [kotTableData, setTableData] = useState([]);
 
     const navigate = useNavigate();
@@ -33,23 +33,23 @@ function Billing() {
     ];
 
     useEffect(()=>{
-        let kotTable = [];
-        console.log(state);
-        state.kotData.forEach((kot)=>{
-            kot.kotItems.forEach((kotItem)=>{
-                console.log(kotItem);
-                let oldKot = {};
-                menuItems.forEach((item)=>{
-                    if(kotItem.itemId === item.id){
-                        oldKot = Object.assign({}, item);
-                        oldKot["qty"] = kotItem["qty"];
-                        oldKot["price"] = kotItem["sellingPrice"];
-                        kotTable.push(oldKot);
-                    }
-                });
-            });
-        });
-        setTableData(kotTable);
+        // let kotTable = [];
+        // console.log(state);
+        // state.kotData.forEach((kot)=>{
+        //     kot.kotItems.forEach((kotItem)=>{
+        //         console.log(kotItem);
+        //         let oldKot = {};
+        //         menuItems.forEach((item)=>{
+        //             if(kotItem.itemId === item.id){
+        //                 oldKot = Object.assign({}, item);
+        //                 oldKot["qty"] = kotItem["qty"];
+        //                 oldKot["price"] = kotItem["sellingPrice"];
+        //                 kotTable.push(oldKot);
+        //             }
+        //         });
+        //     });
+        // });
+        // setTableData(kotTable);
     },[]);
 
     function handleItemCode(e){
@@ -77,17 +77,8 @@ function Billing() {
     }
 
     function handleItemName(e){
-        // const url = "http://localhost:8080/item-service/api/v1/contains";
-        // const headers = {
-        //     'Content-Type': 'application/json',
-        //     'userId':'1'
-        // }
         setItemName(e.target.value)
         console.log("search: "+ itemName)
-        // Axios.get(url, {params: {searchText: itemName}, headers: headers})
-        // .then((res)=>{
-        //     setTableData(res.data);
-        // })
     }
 
     function handle(e){
@@ -219,14 +210,8 @@ function Billing() {
                 <Col sm={6}>
                 
                 <div>
-                    <form>
-                        <input onChange={(e)=>handleItemCode(e)} id="name" value={itemCode} placeholder='Name' type="text" />
-                        <input onChange={(e)=>handleItemCode(e)} id="contact" value={itemCode} placeholder='Contact' type="text" />
-                        <input onChange={(e)=>handle(e)} id="dob" value={dob} placeholder='Dob' type="date" />
-                        {/* <button>Search</button> */}
-                    </form>
                     <div>
-                        <Table data={kotTableData} columns={columns}/>
+                        <MyTable data={kotTableData} columns={columns}/>
                     </div>
                     <div className='ord-total'>
                         <span>Total : {orderValue}</span>
@@ -234,9 +219,9 @@ function Billing() {
                     {(state && state.seatingData.status !== 2)? 
                         (
                         <div>
-                            <div className='button-div'>
+                            {/* <div className='button-div'>
                                 <Button disabled={!kotTableData.length?true:false} onClick={handleBillButton}>Print Bill</Button>
-                            </div>
+                            </div> */}
                             <div className='button-div'>
                                 <Button disabled={!kotTableData.length?true:false} onClick={handleKotButton}>KOT</Button>
                             </div>
