@@ -11,6 +11,9 @@ import Col from 'react-bootstrap/Col';
 import ListGroup from 'react-bootstrap/ListGroup'
 import ListGroupItem from 'react-bootstrap/ListGroupItem'
 import Button from 'react-bootstrap/Button'
+import Tabs from 'react-bootstrap/Tabs'
+import Tab from 'react-bootstrap/Tab'
+import { Card } from 'react-bootstrap';
 // import {useTable} from 'react-table';
 
 function Billing() {
@@ -23,7 +26,7 @@ function Billing() {
     const [kotTableData, setTableData] = useState([]);
 
     const navigate = useNavigate();
-    const {categories, menuItems} = useContext(AppContext)
+    const {categories, menuItems, itemMap} = useContext(AppContext)
 
     const columns = [
         {title: "Item Code", field: 'itemCode'},
@@ -51,6 +54,7 @@ function Billing() {
         // });
         // setTableData(kotTable);
     },[]);
+    console.log(itemMap[2]);
 
     function handleItemCode(e){
         setItemCode(e.target.value)
@@ -143,31 +147,8 @@ function Billing() {
         }
     }
 
-    async function handleBillButton(){
-        console.log("bill button clicked")
-        let itemSummary = [];
-        let uniqueItems = {};
-        state.kotData.forEach((kot)=>{
-            kot["kotItems"].forEach((kotItem)=>{
-                if(uniqueItems[kotItem.itemId]){
-                    uniqueItems[kotItem.itemId]["qty"] += kotItem["qty"];
-                    uniqueItems[kotItem.itemId]["sellingPrice"] += kotItem["sellingPrice"];
-                } else {
-                    uniqueItems[kotItem.itemId] = kotItem;
-                }
-            });
-        });
+    function handleKotCard(){
 
-        Object.keys(uniqueItems).forEach((itemId)=>{
-            itemSummary.push(uniqueItems[itemId]);
-        });
-        let invoice_resp = await doBill(itemSummary, state.seatingData.id);
-        state.seatingData = invoice_resp.data;
-        navigate("/tables")
-    }
-
-    function handleSettle(){
-        console.log("settled");
     }
 
     function handleBack(){
@@ -208,34 +189,76 @@ function Billing() {
                 </Col>
 
                 <Col sm={6}>
-                
-                <div>
-                    <div>
-                        <MyTable data={kotTableData} columns={columns}/>
-                    </div>
-                    <div className='ord-total'>
-                        <span>Total : {orderValue}</span>
-                    </div>
-                    {(state && state.seatingData.status !== 2)? 
-                        (
-                        <div>
-                            {/* <div className='button-div'>
-                                <Button disabled={!kotTableData.length?true:false} onClick={handleBillButton}>Print Bill</Button>
-                            </div> */}
-                            <div className='button-div'>
-                                <Button disabled={!kotTableData.length?true:false} onClick={handleKotButton}>KOT</Button>
+                    <Tabs
+                        defaultActiveKey="new-kot"
+                        id="fill-tab-example"
+                        className="mb-3"
+                        fill
+                    >
+                        <Tab eventKey="new-kot" title="Kot">
+                            <div>
+                                <div>
+                                    <MyTable data={kotTableData} columns={columns}/>
+                                </div>
+                                <div className='ord-total'>
+                                    <span>Total : {orderValue}</span>
+                                </div>
+                                {(state && state.seatingData.status !== 2)? 
+                                    (
+                                    <div>
+                                        {/* <div className='button-div'>
+                                            <Button disabled={!kotTableData.length?true:false} onClick={handleBillButton}>Print Bill</Button>
+                                        </div> */}
+                                        <div className='button-div'>
+                                            <Button disabled={!kotTableData.length?true:false} onClick={handleKotButton}>KOT</Button>
+                                        </div>
+                                        <div className='button-div'>
+                                            <Button disabled={!kotTableData.length?true:false} onClick={handlePrintKotButton}>Print KOT</Button>
+                                        </div>
+                                        <div className='btn'>
+                                            <Button onClick={handleBack}>Back</Button>
+                                        </div>
+                                    </div>
+                                    ):
+                                    <div></div>
+                                }
                             </div>
-                            <div className='button-div'>
-                                <Button disabled={!kotTableData.length?true:false} onClick={handlePrintKotButton}>Print KOT</Button>
+                        </Tab>
+                        <Tab eventKey="old-kot" title="Kot History">
+                            <div>
+                                <Row>
+                                {state.kotData.map((kot)=>{
+                                    let dateTime = new Date(kot.createdAt);
+                                    return(
+                                        <Card onClick={handleKotCard}>
+                                            <Card.Header>{dateTime.toLocaleTimeString()}</Card.Header>
+                                            <Card.Body>
+                                                <ListGroup variant="flush">
+                                                {kot.kotItems.map((kotItem)=>{
+                                                    return(
+                                                        <Row>
+                                                            <Col>
+                                                                {itemMap[kotItem["itemId"]]}
+                                                            </Col>
+                                                            <Col>
+                                                                {kotItem.qty}
+                                                            </Col>
+                                                        </Row>
+                                                        // <ListGroup.Item></ListGroup.Item>
+                                                    )
+                                                })}
+                                                </ListGroup>
+                                            </Card.Body>
+                                        </Card> 
+                                    );
+                                })}
+                                </Row>
+                                {/* <MyTable data={state.kotData} columns={columns}/> */}
+                                
                             </div>
-                            <div className='btn'>
-                                <Button onClick={handleBack}>Back</Button>
-                            </div>
-                        </div>
-                        ):
-                        <div></div>
-                    }
-                </div> 
+                        </Tab>
+                    </Tabs>
+                 
                 </Col>
             
                 

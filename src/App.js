@@ -19,6 +19,7 @@ function App(){
     // const [tableView, setTableState] = useState({});
     const [categories, setCategories] = useState([]);
     const [menuItems, setMenuItems] = useState([]);
+    const [itemMap, setItemMap] = useState({});
 
     useEffect(()=>{
         const headers = {
@@ -48,6 +49,11 @@ function App(){
         Axios.get("http://localhost:8080/item-service/api/v1/all-items", {headers: headers})
         .then((res)=>{
             setMenuItems(res.data);
+            let itemMap = {};
+            res.data.forEach(item => {
+                itemMap[item.id] = item.name;
+            });
+            setItemMap(itemMap);
         });   
     }, []);
 
@@ -105,7 +111,7 @@ function App(){
     ]);
 
     return (
-        <AppContext.Provider value={{categories, menuItems}}>
+        <AppContext.Provider value={{categories, menuItems, itemMap}}>
             <RouterProvider router={router} />
         </AppContext.Provider>
     )

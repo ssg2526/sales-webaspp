@@ -168,7 +168,7 @@ span {
   font-weight: 600;
 }
 
-.card {
+.mycard {
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
   cursor: pointer;
   transition: 0.1s;
@@ -179,46 +179,46 @@ span {
   margin: 10px;
 }
 
-.card.st0{
+.mycard.st0{
   background-color: #a0afbd;
 }
 
 
-.card.st1{
+.mycard.st1{
   background-color: #e2e25b;
 }
 
 
-.card.st2{
+.mycard.st2{
   background-color: #7ddc7d;
 }
 
-.card.st0:hover{
+.mycard.st0:hover{
   background-color: #80858a;
 }
 
 
-.card.st1:hover{
+.mycard.st1:hover{
   background-color: #ecec1f;
 }
 
 
-.card.st2:hover{
+.mycard.st2:hover{
   background-color: #1cd71c;
 }
 
-.card:hover {
+.mycard:hover {
   box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
 }
 
-.card-top {
+.mycard-top {
   text-align: center;
   border-bottom: 1px solid;
   font-size: small;
   margin: 0px 10px;
 }
 
-.card-body {
+.mycard-body {
   text-align: center;
   padding-top: 19px;
   font-weight: 700;

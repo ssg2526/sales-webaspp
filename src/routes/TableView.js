@@ -102,11 +102,11 @@ function TableView(){
                             {tableView[type].map((table, index) =>{
                                 return (
                                     <div key={index}>
-                                        <div onClick={()=>handleTableClick(table)} className={'card '+ 'st'+table.status}>
-                                            <div className='card-top'>
+                                        <div onClick={()=>handleTableClick(table)} className={'mycard '+ 'st'+table.status}>
+                                            <div className='mycard-top'>
                                                 {table.tableNo}
                                             </div>
-                                            <div className='card-body'>
+                                            <div className='mycard-body'>
                                                 {table.orderValue? '₹'+table.orderValue: null}
                                             </div>
                                         </div>
