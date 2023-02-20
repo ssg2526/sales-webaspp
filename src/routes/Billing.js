@@ -243,6 +243,9 @@ function Billing() {
                                                             <Col>
                                                                 {kotItem.qty}
                                                             </Col>
+                                                            <Col>
+                                                                {kotItem.sellingPrice}
+                                                            </Col>
                                                         </Row>
                                                         // <ListGroup.Item></ListGroup.Item>
                                                     )
@@ -253,6 +256,12 @@ function Billing() {
                                     );
                                 })}
                                 </Row>
+                                <div className='btn'>
+                                    <Button onClick={handleBack}>Save</Button>
+                                </div>
+                                <div className='btn'>
+                                    <Button onClick={handleBack}>Back</Button>
+                                </div>
                                 {/* <MyTable data={state.kotData} columns={columns}/> */}
                                 
                             </div>
