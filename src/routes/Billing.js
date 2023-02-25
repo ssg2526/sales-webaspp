@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { AppContext } from '../context';
 import Axios from 'axios'
 import MyTable from '../components/table';
@@ -25,36 +25,19 @@ function Billing() {
     const [orderValue, setOrderValue] = useState(0.0);
     const [kotTableData, setTableData] = useState([]);
 
+    function refreshKotData(data){
+        setTableData(data);
+    }
+
     const navigate = useNavigate();
     const {categories, menuItems, itemMap} = useContext(AppContext)
 
     const columns = [
-        {title: "Item Code", field: 'itemCode'},
-        {title: "Item", field: 'name'},
-        {title: "Qty", field: 'qty'},
-        {title: "Price", field: 'price'},
+        {title: "Item Code", field: 'itemCode', type:'text'},
+        {title: "Item", field: 'name', type:'text'},
+        {title: "Qty", field: 'qty', type:'buttons'},
+        {title: "Price", field: 'price', type:'text'},
     ];
-
-    useEffect(()=>{
-        // let kotTable = [];
-        // console.log(state);
-        // state.kotData.forEach((kot)=>{
-        //     kot.kotItems.forEach((kotItem)=>{
-        //         console.log(kotItem);
-        //         let oldKot = {};
-        //         menuItems.forEach((item)=>{
-        //             if(kotItem.itemId === item.id){
-        //                 oldKot = Object.assign({}, item);
-        //                 oldKot["qty"] = kotItem["qty"];
-        //                 oldKot["price"] = kotItem["sellingPrice"];
-        //                 kotTable.push(oldKot);
-        //             }
-        //         });
-        //     });
-        // });
-        // setTableData(kotTable);
-    },[]);
-    console.log(itemMap[2]);
 
     function handleItemCode(e){
         setItemCode(e.target.value)
@@ -156,9 +139,11 @@ function Billing() {
     }
 
     return (
+        <div className='my-container'>
             <Row>
                 <Col sm={2}>
                 <div className='categ-list'>
+                    <div className='categ-head'>Categories</div>
                     <ListGroup>
                         {categories.map((category, index) => {
                             return (
@@ -177,7 +162,7 @@ function Billing() {
                 <input onChange={(e)=>handleItemName(e)} 
                     onClick={unsetItemCode} id="name" value={itemName} placeholder='Name' type="text" />
                 {/* <button>Search</button> */}
-                <div>
+                <div className='item-scroll'>
                     {itemData.map((item, index) => {
                         return (
                             <div className='item-card' key={index} onClick={()=>handleItemClick(item)}>
@@ -189,6 +174,7 @@ function Billing() {
                 </Col>
 
                 <Col sm={6}>
+                    <div>
                     <Tabs
                         defaultActiveKey="new-kot"
                         id="fill-tab-example"
@@ -198,7 +184,7 @@ function Billing() {
                         <Tab eventKey="new-kot" title="Kot">
                             <div>
                                 <div>
-                                    <MyTable data={kotTableData} columns={columns}/>
+                                    <MyTable data={kotTableData} refreshKotData={refreshKotData} columns={columns}/>
                                 </div>
                                 <div className='ord-total'>
                                     <span>Total : {orderValue}</span>
@@ -225,11 +211,12 @@ function Billing() {
                             </div>
                         </Tab>
                         <Tab eventKey="old-kot" title="Kot History">
-                            <div>
+                            <div className='item-scroll'>
                                 <Row>
                                 {state.kotData.map((kot)=>{
                                     let dateTime = new Date(kot.createdAt);
                                     return(
+                                        <div>
                                         <Card onClick={handleKotCard}>
                                             <Card.Header>{dateTime.toLocaleTimeString()}</Card.Header>
                                             <Card.Body>
@@ -244,6 +231,9 @@ function Billing() {
                                                                 {kotItem.qty}
                                                             </Col>
                                                             <Col>
+                                                                {kotItem.rate}
+                                                            </Col>
+                                                            <Col>
                                                                 {kotItem.sellingPrice}
                                                             </Col>
                                                         </Row>
@@ -252,21 +242,21 @@ function Billing() {
                                                 })}
                                                 </ListGroup>
                                             </Card.Body>
-                                        </Card> 
+                                        </Card>
+                                        </div>
                                     );
                                 })}
                                 </Row>
-                                <div className='btn'>
-                                    <Button onClick={handleBack}>Save</Button>
-                                </div>
-                                <div className='btn'>
-                                    <Button onClick={handleBack}>Back</Button>
-                                </div>
-                                {/* <MyTable data={state.kotData} columns={columns}/> */}
-                                
+                            </div>
+                            <div className='btn'>
+                                <Button onClick={handleBack}>Save</Button>
+                            </div>
+                            <div className='btn'>
+                                <Button onClick={handleBack}>Back</Button>
                             </div>
                         </Tab>
                     </Tabs>
+                    </div>
                  
                 </Col>
             
@@ -276,6 +266,7 @@ function Billing() {
             
             </div>  
             </Row>
+            </div>
     )
 }
 

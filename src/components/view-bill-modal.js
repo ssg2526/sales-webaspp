@@ -7,8 +7,8 @@ import { doBill} from '../utils/billingUtils'
 import { addCustomer } from '../utils/customerUtils';
 import ReactToPrint from 'react-to-print'
 
-function ViewBillModalContent({show, table, kots, reload}){
-    const [showModal, setShowModal] = useState(show);
+function ViewBillModalContent(props){
+    // const [showModal, setShowModal] = useState(show);
     const [kotTableData, setTableData] = useState([]);
     const [totalAmount, setTotalAmount] = useState(0);
     const [totalQty, setTotalQty] = useState(0);
@@ -18,17 +18,16 @@ function ViewBillModalContent({show, table, kots, reload}){
     const [customerDob, setCustomerDob] = useState("");
 
     const columns = [
-        {title: "Item", field: 'name'},
-        {title: "Qty", field: 'qty'},
-        {title: "Rate", field: 'rate'},
-        {title: "Amount", field: 'amount'}
+        {title: "Item", field: 'name', type:'text'},
+        {title: "Qty", field: 'qty', type: 'text'},
+        {title: "Rate", field: 'rate', type: 'text'},
+        {title: "Amount", field: 'amount', type: 'text'}
     ];
 
     useEffect(()=>{
-        console.log("bill button clicked")
         let itemSummary = [];
         let uniqueItems = {};
-        kots.forEach((kot)=>{
+        props.kots.forEach((kot)=>{
             kot["kotItems"].forEach((kotItem)=>{
                 menuItems.forEach((item)=>{
                     if(kotItem.itemId === item.id){
@@ -57,14 +56,6 @@ function ViewBillModalContent({show, table, kots, reload}){
         setTotalQty(finalQty);
     },[]);
 
-    function handleCloseModal(){
-        setShowModal(false);
-    }
-
-    // function handleShow(){
-    //     setShowModal(true);
-    // }
-
     function handleCustomerName(e){
         setCustomerName(e.target.value)
     }
@@ -79,24 +70,23 @@ function ViewBillModalContent({show, table, kots, reload}){
 
     async function handlePrintBill(){
         console.log("clickkkkkkkk");
-        console.log(table)
-        // let customerDetails = {
-        //     "name": customerName,
-        //     "contact": customerContact,
-        //     "dob": customerDob
-        // }
-        // console.log(customerDetails)
-        // if(customerContact){
-        //     addCustomer(customerDetails);
-        // }
-        // let invoice_resp = await doBill(kotTableData, table.id, customerDetails);
-        // table = invoice_resp.data;
-        setShowModal(false);
+        console.log(props.table)
+        let customerDetails = {
+            "name": customerName,
+            "contact": customerContact,
+            "dob": customerDob
+        }
+        console.log(customerDetails)
+        if(customerContact){
+            addCustomer(customerDetails);
+        }
+        let invoice_resp = await doBill(kotTableData, props.table.id, customerDetails);
+        props.close();
     }
 
     let componentRef = useRef(null);
     return (
-        <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal show={props.show} onHide={props.close}>
             <Modal.Header closeButton>
                 <Modal.Title>Bill Summary</Modal.Title>
             </Modal.Header>
@@ -130,8 +120,8 @@ function ViewBillModalContent({show, table, kots, reload}){
                                 <div>{'Date'}</div>
                             </div>
                             <div className='print-col padd-bottom'>
-                                <div>{'Dine in: '}{table.tableNo}</div>
-                                <div>{'Bill no.: '}{table.orderId}</div>
+                                <div>{'Dine in: '}{props.table.tableNo}</div>
+                                <div>{'Bill no.: '}{props.table.orderId}</div>
                             </div>
                         <div className='border-bottom padd-bottom'>
                             <MyTable data={kotTableData} columns={columns}/>
@@ -157,7 +147,7 @@ function ViewBillModalContent({show, table, kots, reload}){
                     content={()=>componentRef}
                     pageStyle="print"
                     onBeforePrint={handlePrintBill}
-                    onAfterPrint={()=>{reload()}}
+                    onAfterPrint={()=>{props.reload()}}
                 />
             </Modal.Footer>
         </Modal>

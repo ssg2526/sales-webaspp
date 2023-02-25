@@ -2,41 +2,29 @@ import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
 import { Form } from "react-bootstrap";
-import {updateSeatingData, settleBill, settle} from '../utils/billingUtils'
+import {settle} from '../utils/billingUtils'
 
-function SettleModalContent({show, table, reload}) {
-    console.log("hahahhahahah");
-    console.log(show);
+function SettleModalContent(props) {
     const [modeOfPay, setModeOfPay] = useState("CASH");
-    const [showModal, setShowModal] = useState(show);
-    console.log("show modal: "+ showModal);
+
     function handlePaymentModeRadioChange(e){
         setModeOfPay(e.target.value);
     }
 
-    function handleCloseModal(){
-        setShowModal(false);
-    }
-
-    // function handleShow(){
-    //     setShowModal(true);
-    // }
-
     async function handleSettleBill(){
-        console.log(table)
-        let settleBillRes = await settle(table, modeOfPay);
-        setShowModal(false);
-        reload();
+        let settleBillRes = await settle(props.table, modeOfPay);
+        props.close();
+        props.reload();
     }
 
     return(
-        <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal show={props.show} onHide={props.close}>
             <Modal.Header closeButton>
                 <Modal.Title>Settle</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <div>
-                    <h4>Amount: {table.orderValue}</h4>
+                    <h4>Amount: {props.table.orderValue}</h4>
                     <form>
                         <Form.Group controlId="paymentType">
                             <Form.Check

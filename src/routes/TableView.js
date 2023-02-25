@@ -13,7 +13,7 @@ function TableView(){
 
     // const {tableView} = useContext(AppContext)
     const [tableView, setTableState] = useState([]);
-    const [openSettleModal, setOpenSettleModal] = useState(false);
+    const [openSettleModal, setViewSettleModal] = useState(false);
     const [openViewBillModal, setViewBillModal] = useState(false);
     const [currentSeating, setCurrentSeating] = useState({});
     const [currentTableKots, setCurrentTableKots] = useState([]);
@@ -46,14 +46,11 @@ function TableView(){
     }
 
     async function handleTableClick(table){
-        //make call to get kots
-        console.log(table);
         if(table.status !== 2){
             let kot_data = []
             if(table.orderId){
                 let res = await getAllKotsForOrder(table.orderId);
                 kot_data = res.data;
-                console.log(kot_data);
             }
             navigate('billing', {
                 state: {
@@ -68,32 +65,23 @@ function TableView(){
         console.log("clicked");
         setCurrentSeating(table);
         console.log("table set");
-        if(openSettleModal === true){
-            setOpenSettleModal(false);
-        } else {
-            setOpenSettleModal(true);
-        }
+        setViewSettleModal(true);
     }
 
     async function handleBillClick(table){
-        console.log("bill clicked");
         setCurrentSeating(table);
         let kot_data = []
-            if(table.orderId){
-                let res = await getAllKotsForOrder(table.orderId);
-                kot_data = res.data;
-                setCurrentTableKots(kot_data);
-            }
-        console.log("table set");
-        if(openViewBillModal === true){
-            setViewBillModal(false);
-        } else {
-            setViewBillModal(true);
+        if(table.orderId){
+            let res = await getAllKotsForOrder(table.orderId);
+            kot_data = res.data;
+            setCurrentTableKots(kot_data);
         }
+        console.log("table set");
+        setViewBillModal(true);
     }
 
     return(
-        <div>
+        <div className='my-container'>
             {Object.keys(tableView).map((type, index)=>{
                 return(
                     <div key={index} className='seating-view'>
@@ -126,11 +114,11 @@ function TableView(){
                 )
             })}
             {
-                openSettleModal? 
-                    <SettleModalContent show={openSettleModal} table={currentSeating} reload={refresh}/>: null}
+                openSettleModal?
+                <SettleModalContent show={openSettleModal} close={()=>setViewSettleModal(false)} reload={()=>forceUpdate()} table={currentSeating}/>:null}
             {
-                openViewBillModal? 
-                    <ViewBillModalContent show={openViewBillModal} reload={refresh} table={currentSeating} kots={currentTableKots} />:null
+                openViewBillModal?
+                <ViewBillModalContent show={openViewBillModal} close={()=>setViewBillModal(false)} reload={()=>forceUpdate()} table={currentSeating} kots={currentTableKots} />:null
             }
         </div>
     )

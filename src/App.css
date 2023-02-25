@@ -49,6 +49,7 @@
 }
 
 .table th, .table td {
+  text-align: center;
 	border: 1px solid #ddd;
 	padding: 8px;
 }
@@ -109,11 +110,12 @@
   align-items: center;
 }
 
-span {
-}
-
 .row-flex{
   display: flex;
+}
+
+.my-container{
+  background-color:rgb(248, 248, 248);
 }
 
 .bill-layout {
@@ -228,6 +230,23 @@ span {
   padding-left: 100px;
 }
 
+.item-scroll{
+  overflow-y: auto;
+  max-height: 500px;
+}
+
+.categ-head{
+  font-weight: 800;
+  font-size: large;
+  background-color: slategray;
+}
+
+.categ-list{
+  overflow-y: auto;
+  height: 600px;
+  max-height: 600px;
+}
+
 .categ-list ul{
   list-style-type: none;
 }
@@ -243,19 +262,21 @@ span {
 }
 
 .item-card{
+  background-color: #abcaed;
   display: inline-block;
   width: 100px;
   height: 60px;
   margin-right: 10px;
   margin-top: 10px;
-  border: 2px solid rgb(47, 46, 46);
   border-radius: 6px;
   padding-left: 4px;
   cursor: pointer;
+  word-wrap: break-word;
+  overflow: auto;
 }
 
 .item-card:hover{
-  background-color: #000;
+  background-color: #416b9b;
   color: white;
 }
 
@@ -264,6 +285,22 @@ span {
   text-align: end;
   padding-right: 6px;
 }
+
+.qtyBtn{
+  /* padding: 1px; */
+  border: 1px solid rgb(47, 46, 46);
+  border-radius: 4px;
+  margin-left: 4px;
+  margin-right: 4px;
+  width: 20px;
+  text-align: center;
+}
+
+.qtyBtn:hover{
+  background-color: black;
+  color: white;
+}
+
 
 /* .table{
   height: 500px;
