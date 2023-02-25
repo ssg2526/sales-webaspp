@@ -1,11 +1,9 @@
 import {Table} from 'react-bootstrap';
 
-function MyTable({data, refreshKotData, columns}){
+function MyTable(props){
 
     function handleAddQty(item){
-        console.log(data);
         item['qty']++;
-        refreshKotData(data);
     }
     
     
@@ -17,12 +15,12 @@ function MyTable({data, refreshKotData, columns}){
     // console.log(data);
 
     const TableHeaders = ({header}) => <th>{header.title}</th>
-    const TableRow = ({item, columns}) => {
+    const TableRow = ({item}) => {
         // console.log(item);
         return <tr key={item.id}>
-            {columns.map((columnItem, index) => {
+            {props.columns.map((columnItem, index) => {
                 if(columnItem.field == 'qty' && columnItem.type === 'buttons'){
-                    return <td key={index}> <button onClick={()=>handleSubtractQty(item)} className='qtyBtn'>{'-'}</button> {item[`${columnItem.field}`]} <button onClick={()=>handleAddQty(item)} className='qtyBtn'>{'+'}</button> </td>
+                    return <td key={index}> <button onClick={()=>props.handleQty(item, false)} className='qtyBtn'>{'-'}</button> {item[`${columnItem.field}`]} <button onClick={()=>props.handleQty(item, true)} className='qtyBtn'>{'+'}</button> </td>
                 }else{
                     return <td key={index}>{item[`${columnItem.field}`]}</td>
                 }
@@ -40,14 +38,14 @@ function MyTable({data, refreshKotData, columns}){
         <Table striped borderless hover>
             <thead>
                 <tr>
-                    {columns.map((item, index) => 
+                    {props.columns.map((item, index) => 
                         <TableHeaders key={index} header={item} />
                     )}
                 </tr>
             </thead>
             <tbody>
-                {data.map((item, index) => 
-                    <TableRow key={index} item={item} columns={columns}/>
+                {props.data.map((item, index) => 
+                    <TableRow key={index} item={item}/>
                 )}
             </tbody>
         </Table>

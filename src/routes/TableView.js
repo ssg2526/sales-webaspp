@@ -11,7 +11,6 @@ function TableView(){
 
     const navigate = useNavigate ();
 
-    // const {tableView} = useContext(AppContext)
     const [tableView, setTableState] = useState([]);
     const [openSettleModal, setViewSettleModal] = useState(false);
     const [openViewBillModal, setViewBillModal] = useState(false);
@@ -39,11 +38,6 @@ function TableView(){
             setTableState(tableView);
         });
     }, [ignored]);
-
-    function refresh(){
-        console.log("reload");
-        forceUpdate();
-    }
 
     async function handleTableClick(table){
         if(table.status !== 2){

@@ -68,13 +68,6 @@ function Billing() {
         console.log("search: "+ itemName)
     }
 
-    function handle(e){
-        // const newData = {...data}
-        // newData[e.target.id] = e.target.value
-        // setData(newData)
-    }
-
-
     function handleCatClick(category){
         let categoryItems = []
         menuItems.forEach((item)=>{
@@ -83,6 +76,33 @@ function Billing() {
             }
         });
         setitemData(categoryItems);
+    }
+
+    function handleQty(item, incr){
+        let newItem = item;
+        
+        var newTableData = [];
+        kotTableData.forEach(dataItem => {
+            console.log(dataItem);
+            if(dataItem.itemCode === newItem.itemCode){
+                if(incr){
+                    dataItem["qty"] = dataItem["qty"]+1;
+                    setOrderValue(orderValue+newItem["rate"]);
+                } else {
+                    if(dataItem["qty"] > 0){
+                        dataItem["qty"] = dataItem["qty"]-1;
+                        setOrderValue(orderValue-newItem["rate"]);
+                    }
+                }
+                dataItem["price"] = dataItem["rate"]*dataItem["qty"];
+                if(dataItem["qty"] > 0){
+                    newTableData.push(newItem);
+                }
+            } else {
+                newTableData.push(dataItem);
+            }
+        });
+        setTableData(newTableData);
     }
 
     function handleItemClick(item){
@@ -96,7 +116,8 @@ function Billing() {
                 dataItem["qty"] = dataItem["qty"]+1;
                 dataItem["price"] = dataItem["rate"]*dataItem["qty"];
                 newTableData.push(newItem);
-                isItemExist = true; 
+                isItemExist = true;
+                 
             } else {
                 newTableData.push(dataItem);
             }
@@ -184,7 +205,7 @@ function Billing() {
                         <Tab eventKey="new-kot" title="Kot">
                             <div>
                                 <div>
-                                    <MyTable data={kotTableData} refreshKotData={refreshKotData} columns={columns}/>
+                                    <MyTable data={kotTableData} handleQty={handleQty} columns={columns}/>
                                 </div>
                                 <div className='ord-total'>
                                     <span>Total : {orderValue}</span>
