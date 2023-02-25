@@ -115,7 +115,7 @@ function TableView(){
                                             <Button onClick={(e)=>handleSettleClick(table)}>Settle</Button>
                                         </div>:table.status === 1?
                                         <div className='button-div'>
-                                            <Button onClick={(e)=>handleBillClick(table)}>Summary</Button>
+                                            <Button onClick={(e)=>handleBillClick(table)}>Bill</Button>
                                         </div>:null
                                         }
                                     </div>

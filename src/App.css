@@ -43,7 +43,7 @@
 }
 
 .table {
-	border-collapse: collapse;
+	/* border-collapse: collapse; */
 	/* max-width: 900px; */
 	/* width: 100%; */
 }
@@ -272,4 +272,76 @@ span {
 .button-div{
   display: inline-block;
   padding-right: 10px;
+}
+
+.no-print{
+  display: none;
+}
+
+@media print{
+.print-test{
+    padding: 2px;
+    text-align: right;
+  }
+
+  .no-print{
+    display: block;
+  }
+
+  .bill-title{
+    font-size: 12px;
+    text-align: center;
+    margin: 0;
+  }
+ 
+  .print-name{
+    padding: 1px;
+    border-top: 0.5px solid black;
+    border-bottom: 0.5px solid black;
+    margin-left: 3px;
+    font-size: 12px;
+  }
+
+  .ticket{
+    width: 65mm;
+    max-width: 65mm;
+  }
+
+  .print-row{
+    font-size: 12px;
+    width: 98%;
+    padding-left: 3px;
+  }
+  .print-col{
+    width: 40%;
+  }
+
+  .foot-text{
+    padding: 5px;
+    text-align: center;
+    font-size: 12px;
+  }
+
+  .bord-bottom{
+    border-bottom: 0.5px solid black;
+  }
+  .table td{
+    font-size: 12px;
+    border: none;
+  }
+
+  .table tr{
+    font-size: 12px;
+    border: none;
+    margin: 0px !important;
+    padding: 0px !important;
+  }
+
+  .titlebold{
+    font-weight: 600;
+  }
+
+  .padd-bottom{
+    padding-bottom: 2px;
+  }
 }

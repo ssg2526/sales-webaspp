@@ -3,7 +3,7 @@ import {Table} from 'react-bootstrap';
 function MyTable({data, columns}){
     // console.log(data);
     return (
-        <Table className='table'>
+        <Table striped borderless hover>
             <thead>
                 <tr>
                     {columns.map((item, index) => 
