@@ -37,8 +37,6 @@ function ViewBillModalContent(props){
                 kotItem["amount"] = kotItem["sellingPrice"];
                 if(uniqueItems[kotItem.itemId]){
                     uniqueItems[kotItem.itemId]["qty"] += kotItem["qty"];
-                    uniqueItems[kotItem.itemId]["sellingPrice"] += kotItem["sellingPrice"];
-                    uniqueItems[kotItem.itemId]["amount"] += kotItem["amount"];
                 } else {
                     uniqueItems[kotItem.itemId] = kotItem;
                 }
@@ -47,6 +45,10 @@ function ViewBillModalContent(props){
         let finalAmount = 0;
         let finalQty = 0;
         Object.keys(uniqueItems).forEach((itemId)=>{
+            uniqueItems[itemId]["rate"] = 1*(uniqueItems[itemId]["rate"]*(20/21)).toFixed(2);
+            uniqueItems[itemId]["sellingPrice"] = 1*(uniqueItems[itemId]["qty"]*uniqueItems[itemId]["rate"]).toFixed(2);
+            uniqueItems[itemId]["amount"] = 1*(uniqueItems[itemId]["qty"]*uniqueItems[itemId]["rate"]).toFixed(2);
+            
             itemSummary.push(uniqueItems[itemId]);
             finalAmount += uniqueItems[itemId]["amount"];
             finalQty += uniqueItems[itemId]["qty"];
@@ -81,7 +83,6 @@ function ViewBillModalContent(props){
             addCustomer(customerDetails);
         }
         let invoice_resp = await doBill(kotTableData, props.table.id, customerDetails);
-        props.close();
     }
 
     let componentRef = useRef(null);
@@ -105,7 +106,16 @@ function ViewBillModalContent(props){
                         Sub Total: {totalAmount}
                     </div>
                     <div className='print-test bord-bottom'>
-                        Total Qty: {totalQty}
+                        Total Items: {totalQty}
+                    </div>
+                    <div>
+                        CGST (2.5%): {(totalAmount*(2.5/100)).toFixed(2)}
+                    </div>
+                    <div>
+                        SGST (2.5%): {(totalAmount*(2.5/100)).toFixed(2)}
+                    </div>
+                    <div>
+                        Grand Total: {(totalAmount + totalAmount*(5/100)).toFixed(2)}
                     </div>
                     <div className='no-print ticket' ref={el=>(componentRef=el)}>
                         <div className='no-print bill-title'>
@@ -126,11 +136,20 @@ function ViewBillModalContent(props){
                         <div className='border-bottom padd-bottom'>
                             <MyTable data={kotTableData} columns={columns}/>
                         </div>
-                        <div className='print-test bord-bottom'>
+                        <div className='print-test'>
                             Sub Total: {totalAmount}
                         </div>
-                        <div className='print-test bord-bottom padd-bottom'>
+                        <div  className='print-test bord-bottom'>
                             Total Qty: {totalQty}
+                        </div>
+                        <div className='print-test'>
+                            CGST (2.5%): {(totalAmount*(2.5/100)).toFixed(2)}
+                        </div>
+                        <div  className='print-test bord-bottom padd-bottom'>
+                            SGST (2.5%): {(totalAmount*(2.5/100)).toFixed(2)}
+                        </div>
+                        <div className='print-grand'>
+                            Grand Total: {(totalAmount + totalAmount*(5/100)).toFixed(2)}
                         </div>
                         </div>
                         <div className='no-print foot-text'>
@@ -147,7 +166,7 @@ function ViewBillModalContent(props){
                     content={()=>componentRef}
                     pageStyle="print"
                     onBeforePrint={handlePrintBill}
-                    onAfterPrint={()=>{props.reload()}}
+                    onAfterPrint={()=>{props.close();props.reload()}}
                 />
             </Modal.Footer>
         </Modal>

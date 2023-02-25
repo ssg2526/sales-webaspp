@@ -316,9 +316,15 @@
 }
 
 @media print{
-.print-test{
+  .print-test{
     padding: 2px;
     text-align: right;
+  }
+
+  .print-grand{
+    padding: 2px;
+    text-align: right;
+    font-weight: 600;
   }
 
   .no-print{
