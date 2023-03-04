@@ -10,7 +10,9 @@ import ReactToPrint from 'react-to-print'
 function ViewBillModalContent(props){
     // const [showModal, setShowModal] = useState(show);
     const [kotTableData, setTableData] = useState([]);
+    const [billSummaryData, setBillSummaryData] = useState([]);
     const [totalAmount, setTotalAmount] = useState(0);
+    const [subTotal, setSubTotal] = useState(0);
     const [totalQty, setTotalQty] = useState(0);
     const { menuItems} = useContext(AppContext)
     const [customerContact, setCustomerContact] = useState(""); 
@@ -26,6 +28,7 @@ function ViewBillModalContent(props){
 
     useEffect(()=>{
         let itemSummary = [];
+        let billSummary = [];
         let uniqueItems = {};
         props.kots.forEach((kot)=>{
             kot["kotItems"].forEach((kotItem)=>{
@@ -43,18 +46,24 @@ function ViewBillModalContent(props){
             });
         });
         let finalAmount = 0;
+        let subTot = 0;
         let finalQty = 0;
         Object.keys(uniqueItems).forEach((itemId)=>{
-            uniqueItems[itemId]["rate"] = 1*(uniqueItems[itemId]["rate"]*(20/21)).toFixed(2);
-            uniqueItems[itemId]["sellingPrice"] = 1*(uniqueItems[itemId]["qty"]*uniqueItems[itemId]["rate"]).toFixed(2);
-            uniqueItems[itemId]["amount"] = 1*(uniqueItems[itemId]["qty"]*uniqueItems[itemId]["rate"]).toFixed(2);
+            let billSummaryItem = JSON.parse(JSON.stringify(uniqueItems[itemId]));
+            billSummaryItem["rate"] = 1*(billSummaryItem["rate"]*(20/21)).toFixed(2);
+            billSummaryItem["sellingPrice"] = 1*(billSummaryItem["qty"]*billSummaryItem["rate"]).toFixed(2);
+            billSummaryItem["amount"] = 1*(billSummaryItem["qty"]*billSummaryItem["rate"]).toFixed(2);
             
             itemSummary.push(uniqueItems[itemId]);
+            billSummary.push(billSummaryItem);
             finalAmount += uniqueItems[itemId]["amount"];
+            subTot += billSummaryItem["amount"];
             finalQty += uniqueItems[itemId]["qty"];
         });
         setTableData(itemSummary);
+        setBillSummaryData(billSummary);
         setTotalAmount(finalAmount);
+        setSubTotal(subTot);
         setTotalQty(finalQty);
     },[]);
 
@@ -103,20 +112,20 @@ function ViewBillModalContent(props){
                         <MyTable data={kotTableData} columns={columns}/>
                     </div>
                     <div className='print-test bord-bottom'>
-                        Sub Total: {totalAmount}
+                        Total Amount: {totalAmount.toFixed(2)}
                     </div>
                     <div className='print-test bord-bottom'>
                         Total Items: {totalQty}
                     </div>
-                    <div>
+                    {/* <div>
                         CGST (2.5%): {(totalAmount*(2.5/100)).toFixed(2)}
                     </div>
                     <div>
                         SGST (2.5%): {(totalAmount*(2.5/100)).toFixed(2)}
                     </div>
                     <div>
-                        Grand Total: {(totalAmount + totalAmount*(5/100)).toFixed(2)}
-                    </div>
+                        Grand Total: {Math.round((totalAmount + totalAmount*(5/100)).toFixed(2))} */}
+                    {/* </div> */}
                     <div className='no-print ticket' ref={el=>(componentRef=el)}>
                         <div className='no-print bill-title'>
                             <div className='titlebold'>{'UNIBUCKS COFFEE'}</div>
@@ -134,22 +143,22 @@ function ViewBillModalContent(props){
                                 <div>{'Bill no.: '}{props.table.orderId}</div>
                             </div>
                         <div className='border-bottom padd-bottom'>
-                            <MyTable data={kotTableData} columns={columns}/>
+                            <MyTable data={billSummaryData} columns={columns}/>
                         </div>
                         <div className='print-test'>
-                            Sub Total: {totalAmount}
+                            Sub Total: {(subTotal*1).toFixed(2)}
                         </div>
                         <div  className='print-test bord-bottom'>
                             Total Qty: {totalQty}
                         </div>
                         <div className='print-test'>
-                            CGST (2.5%): {(totalAmount*(2.5/100)).toFixed(2)}
+                            CGST (2.5%): {(subTotal*(2.5/100)).toFixed(2)}
                         </div>
                         <div  className='print-test bord-bottom padd-bottom'>
-                            SGST (2.5%): {(totalAmount*(2.5/100)).toFixed(2)}
+                            SGST (2.5%): {(subTotal*(2.5/100)).toFixed(2)}
                         </div>
                         <div className='print-grand'>
-                            Grand Total: {(totalAmount + totalAmount*(5/100)).toFixed(2)}
+                            Grand Total: {totalAmount}
                         </div>
                         </div>
                         <div className='no-print foot-text'>
@@ -161,7 +170,7 @@ function ViewBillModalContent(props){
             <Modal.Footer>
                 <ReactToPrint 
                     trigger={()=>{
-                        return <Button>Print Bill</Button>
+                        return <Button>Save & Print</Button>
                     }}
                     content={()=>componentRef}
                     pageStyle="print"

@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import Axios from 'axios'
 import MyTable from '../components/table';
 import {Table} from 'react-bootstrap';
+import CustomPagination from "../components/custom-pagination";
 // import paginationFactory from "react-bootstrap-table2-paginator";
 
 // import MaterialTable from 'material-table';
 // import {useTable} from 'react-table';
 
 function Invoice() {
+    const [currentPage, setCurrentPage] = useState(1);
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
     const url = "http://localhost:8080/sales-service/api/v1/getInvoicesByDates";
     const headers = {
         'Content-Type': 'application/json',
@@ -19,6 +22,7 @@ function Invoice() {
     });
 
     const [tableData, setTableData] = useState([]);
+    const [TotalDataCount, setTotalDataCount] = useState(1);
 
     const columns = [
         {title: "Invoice", field: 'invoiceNo'},
@@ -37,7 +41,7 @@ function Invoice() {
         e.preventDefault();
         Axios.get(url, {params: {from: data.from, to: data.to}, headers: headers})
         .then((res)=>{
-            var dataset = res.data.map((item)=>{
+            var dataset = res.data.content.map((item)=>{
                 var dateTime = new Date(item.createdAt);
                 var date = dateTime.toLocaleDateString();
                 var time = dateTime.toLocaleTimeString();
@@ -45,6 +49,7 @@ function Invoice() {
                 item.time = time;
                 return item;
             });
+            setTotalDataCount(res.data.TotalDataCount);
             setTableData(dataset);
         })
     }
@@ -57,6 +62,12 @@ function Invoice() {
             </form>    
             <div>
                 <MyTable data={tableData} columns={columns}/>
+                <CustomPagination
+                    dataPerPage={10}
+                    totalData={TotalDataCount}
+                    paginate={paginate}
+                    currentPage={currentPage}
+                />
             </div>
         </div>
     )
