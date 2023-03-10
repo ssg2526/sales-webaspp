@@ -80,6 +80,7 @@ function ViewBillModalContent(props){
     }
 
     async function handlePrintBill(){
+        document.getElementById("save-n-print").disabled = true;
         console.log("clickkkkkkkk");
         console.log(props.table)
         let customerDetails = {
@@ -130,13 +131,13 @@ function ViewBillModalContent(props){
                         <div className='no-print bill-title'>
                             <div className='titlebold'>{'UNIBUCKS COFFEE'}</div>
                             <div>{'9th B Road Sardarpura, Jodhpur'}</div>
-                            <div className='padd-bottom'>{'GST-XCDFTYIJYKIUY765378i'}</div>
+                            <div className='padd-bottom'>{'GST-08BEFPG3057P1Z5'}</div>
                         </div>
 
                         <div className='no-print print-name'> {'Name: '}{customerName}</div>
                         <div className='no-print print-row border-bottom'>
                             <div className='print-col'>
-                                <div>{'Date'}</div>
+                                <div>{'Date: '}{new Date().toLocaleDateString()}</div>
                             </div>
                             <div className='print-col padd-bottom'>
                                 <div>{'Dine in: '}{props.table.tableNo}</div>
@@ -162,7 +163,7 @@ function ViewBillModalContent(props){
                         </div>
                         </div>
                         <div className='no-print foot-text'>
-                            {'Thank you text'}
+                            {'Thank you for visiting us!'}
                         </div>
                     </div>
                 </div>
@@ -170,7 +171,7 @@ function ViewBillModalContent(props){
             <Modal.Footer>
                 <ReactToPrint 
                     trigger={()=>{
-                        return <Button>Save & Print</Button>
+                        return <Button id="save-n-print">Save & Print</Button>
                     }}
                     content={()=>componentRef}
                     pageStyle="print"

@@ -131,6 +131,8 @@ function Billing() {
     }
 
     async function handleKotButton(){
+        document.getElementById("kot").disabled = true
+        document.getElementById("print-kot").disabled = true
         if(kotTableData.length){
             let kot_resp = await doKot(kotTableData, state.seatingData.id);
             state.seatingData = kot_resp.data;
@@ -141,6 +143,8 @@ function Billing() {
     }
 
     async function handlePrintKotButton(){
+        document.getElementById("kot").disabled = true
+        document.getElementById("print-kot").disabled = true
         console.log("print kot")
         if(kotTableData.length){
             let kot_resp = await doKot(kotTableData, state.seatingData.id);
@@ -217,10 +221,10 @@ function Billing() {
                                             <Button disabled={!kotTableData.length?true:false} onClick={handleBillButton}>Print Bill</Button>
                                         </div> */}
                                         <div className='button-div'>
-                                            <Button disabled={!kotTableData.length?true:false} onClick={handleKotButton}>KOT</Button>
+                                            <Button id="kot" disabled={!kotTableData.length?true:false} onClick={handleKotButton}>KOT</Button>
                                         </div>
                                         <div className='button-div'>
-                                            <Button disabled={!kotTableData.length?true:false} onClick={handlePrintKotButton}>Print KOT</Button>
+                                            <Button id="print-kot" disabled={!kotTableData.length?true:false} onClick={handlePrintKotButton}>Print KOT</Button>
                                         </div>
                                         <div className='btn'>
                                             <Button onClick={handleBack}>Back</Button>
