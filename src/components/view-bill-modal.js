@@ -12,12 +12,14 @@ function ViewBillModalContent(props){
     const [kotTableData, setTableData] = useState([]);
     const [billSummaryData, setBillSummaryData] = useState([]);
     const [totalAmount, setTotalAmount] = useState(0);
+    const [finalAmount, setFinalAmount] = useState(0);
     const [subTotal, setSubTotal] = useState(0);
     const [totalQty, setTotalQty] = useState(0);
     const { menuItems} = useContext(AppContext)
     const [customerContact, setCustomerContact] = useState(""); 
     const [customerName, setCustomerName] = useState(""); 
     const [customerDob, setCustomerDob] = useState("");
+    const [discount, setDiscount] = useState();
 
     const columns = [
         {title: "Item", field: 'name', type:'text'},
@@ -40,6 +42,7 @@ function ViewBillModalContent(props){
                 kotItem["amount"] = kotItem["sellingPrice"];
                 if(uniqueItems[kotItem.itemId]){
                     uniqueItems[kotItem.itemId]["qty"] += kotItem["qty"];
+                    uniqueItems[kotItem.itemId]["amount"] += kotItem["amount"];
                 } else {
                     uniqueItems[kotItem.itemId] = kotItem;
                 }
@@ -63,9 +66,17 @@ function ViewBillModalContent(props){
         setTableData(itemSummary);
         setBillSummaryData(billSummary);
         setTotalAmount(finalAmount);
+        setFinalAmount(finalAmount);
         setSubTotal(subTot);
         setTotalQty(finalQty);
     },[]);
+
+    useEffect(()=>{
+        console.log(totalAmount);
+        if(discount){
+            setFinalAmount(totalAmount-((totalAmount*discount)/100));
+        }
+    }, [discount]);
 
     function handleCustomerName(e){
         setCustomerName(e.target.value)
@@ -77,6 +88,10 @@ function ViewBillModalContent(props){
 
     function handleCustomerDob(e){
         setCustomerDob(e.target.value);
+    }
+
+    function handleDiscount(e){
+        setDiscount(e.target.value);
     }
 
     async function handlePrintBill(){
@@ -92,7 +107,7 @@ function ViewBillModalContent(props){
         if(customerContact){
             addCustomer(customerDetails);
         }
-        let invoice_resp = await doBill(kotTableData, props.table.id, customerDetails);
+        // let invoice_resp = await doBill(kotTableData, props.table.id, customerDetails, discount);
     }
 
     let componentRef = useRef(null);
@@ -113,20 +128,15 @@ function ViewBillModalContent(props){
                         <MyTable data={kotTableData} columns={columns}/>
                     </div>
                     <div className='print-test bord-bottom'>
-                        Total Amount: {totalAmount.toFixed(2)}
+                    <label htmlFor="discount">Discount:</label>
+                        <input onChange={(e)=>handleDiscount(e)} id="discount" value={discount} type="number" min="0" max="100"/>
+                    </div>
+                    <div className='print-test bord-bottom'>
+                        Total Amount: {finalAmount.toFixed(2)}
                     </div>
                     <div className='print-test bord-bottom'>
                         Total Items: {totalQty}
                     </div>
-                    {/* <div>
-                        CGST (2.5%): {(totalAmount*(2.5/100)).toFixed(2)}
-                    </div>
-                    <div>
-                        SGST (2.5%): {(totalAmount*(2.5/100)).toFixed(2)}
-                    </div>
-                    <div>
-                        Grand Total: {Math.round((totalAmount + totalAmount*(5/100)).toFixed(2))} */}
-                    {/* </div> */}
                     <div className='no-print ticket' ref={el=>(componentRef=el)}>
                         <div className='no-print bill-title'>
                             <div className='titlebold'>{'UNIBUCKS COFFEE'}</div>
@@ -161,6 +171,17 @@ function ViewBillModalContent(props){
                         <div className='print-grand'>
                             Grand Total: {totalAmount}
                         </div>
+                        { (discount && discount>0)?
+                            <div>
+                                <div className='print-grand bord-bottom padd-bottom'>
+                                    Discount: {discount}%
+                                </div>
+                                <div  className='print-grand bord-bottom padd-bottom'>
+                                    Net Payable: {finalAmount}
+                                </div>
+                            </div>
+                            :null
+                        }
                         </div>
                         <div className='no-print foot-text'>
                             {'Thank you for visiting us!'}

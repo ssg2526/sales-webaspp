@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import { AppContext } from '../context';
 import Axios from 'axios'
 import MyTable from '../components/table';
@@ -14,6 +14,7 @@ import Button from 'react-bootstrap/Button'
 import Tabs from 'react-bootstrap/Tabs'
 import Tab from 'react-bootstrap/Tab'
 import { Card } from 'react-bootstrap';
+import ReactToPrint from 'react-to-print'
 // import {useTable} from 'react-table';
 
 function Billing() {
@@ -31,12 +32,17 @@ function Billing() {
 
     const navigate = useNavigate();
     const {categories, menuItems, itemMap} = useContext(AppContext)
-
+    let componentRef = useRef(null);
     const columns = [
         {title: "Item Code", field: 'itemCode', type:'text'},
         {title: "Item", field: 'name', type:'text'},
         {title: "Qty", field: 'qty', type:'buttons'},
         {title: "Price", field: 'price', type:'text'},
+    ];
+
+    const kotColumns = [
+        {title: "Item", field: 'name', type:'text'},
+        {title: "Qty", field: 'qty', type:'text'},
     ];
 
     function handleItemCode(e){
@@ -151,7 +157,7 @@ function Billing() {
             state.seatingData = kot_resp.data;
             console.log(kot_resp.data);
             // let table_res = await updateSeatingData(state.seatingData, 1, order_id, orderValue);
-            navigate("/tables")
+            // navigate("/tables")
         }
     }
 
@@ -214,6 +220,15 @@ function Billing() {
                                 <div className='ord-total'>
                                     <span>Total : {orderValue}</span>
                                 </div>
+                                <div className='no-print ticket' ref={el=>(componentRef=el)}>
+                                    <div className='no-print bill-title'>
+                                        <div className='titlebold'>{'KOT'}</div>
+                                        <div>{'Table: '}{state.seatingData.id}</div>
+                                    </div>
+                                    <div className='border-bottom padd-bottom'>
+                                        <MyTable data={kotTableData} columns={kotColumns}/>
+                                    </div>
+                                </div>
                                 {(state && state.seatingData.status !== 2)? 
                                     (
                                     <div>
@@ -224,7 +239,16 @@ function Billing() {
                                             <Button id="kot" disabled={!kotTableData.length?true:false} onClick={handleKotButton}>KOT</Button>
                                         </div>
                                         <div className='button-div'>
-                                            <Button id="print-kot" disabled={!kotTableData.length?true:false} onClick={handlePrintKotButton}>Print KOT</Button>
+                                            <ReactToPrint 
+                                                trigger={()=>{
+                                                    return <Button id="print-kot" disabled={!kotTableData.length?true:false}>Print KOT</Button>
+                                                }}
+                                                content={()=>componentRef}
+                                                pageStyle="print"
+                                                onBeforePrint={handlePrintKotButton}
+                                                onAfterPrint={handleBack}
+                                            />
+                                            {/* <Button id="print-kot" disabled={!kotTableData.length?true:false} onClick={handlePrintKotButton}>Print KOT</Button> */}
                                         </div>
                                         <div className='btn'>
                                             <Button onClick={handleBack}>Back</Button>
@@ -238,7 +262,7 @@ function Billing() {
                         <Tab eventKey="old-kot" title="Kot History">
                             <div className='item-scroll'>
                                 <Row>
-                                {state.kotData.map((kot)=>{
+                                {state?state.kotData.map((kot)=>{
                                     let dateTime = new Date(kot.createdAt);
                                     return(
                                         <div>
@@ -270,7 +294,7 @@ function Billing() {
                                         </Card>
                                         </div>
                                     );
-                                })}
+                                }):null}
                                 </Row>
                             </div>
                             <div className='btn'>

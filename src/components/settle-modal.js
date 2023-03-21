@@ -12,6 +12,7 @@ function SettleModalContent(props) {
     }
 
     async function handleSettleBill(){
+        document.getElementById("settle-bill").disabled = true;
         let settleBillRes = await settle(props.table, modeOfPay);
         props.close();
         props.reload();
@@ -49,7 +50,7 @@ function SettleModalContent(props) {
             </Modal.Body>
             <Modal.Footer>
                 <div className='button-div'>
-                    <Button onClick={(e)=>handleSettleBill()}>Settle</Button>
+                    <Button id="settle-bill" onClick={(e)=>handleSettleBill()}>Settle</Button>
                 </div>
             </Modal.Footer>
         </Modal>
