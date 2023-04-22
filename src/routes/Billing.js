@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { AppContext } from '../context';
 import Axios from 'axios'
 import MyTable from '../components/table';
@@ -25,10 +25,7 @@ function Billing() {
     const { state } = useLocation();
     const [orderValue, setOrderValue] = useState(0.0);
     const [kotTableData, setTableData] = useState([]);
-
-    function refreshKotData(data){
-        setTableData(data);
-    }
+    const [isReadonly, setIsReadonly] = useState(state.seatingData.status === 2);
 
     const navigate = useNavigate();
     const {categories, menuItems, itemMap} = useContext(AppContext)
@@ -44,6 +41,11 @@ function Billing() {
         {title: "Item", field: 'name', type:'text'},
         {title: "Qty", field: 'qty', type:'text'},
     ];
+
+
+    function refreshKotData(data){
+        setTableData(data);
+    }
 
     function handleItemCode(e){
         setItemCode(e.target.value)
@@ -93,14 +95,27 @@ function Billing() {
             if(dataItem.itemCode === newItem.itemCode){
                 if(incr){
                     dataItem["qty"] = dataItem["qty"]+1;
-                    setOrderValue(orderValue+newItem["rate"]);
+                    if(state.seatingData.type === "Zomato" || state.seatingData.type === "Swiggy"){
+                        setOrderValue(orderValue+newItem["onlineRate"]);
+                    } else {
+                        setOrderValue(orderValue+newItem["rate"]);
+                    }
                 } else {
                     if(dataItem["qty"] > 0){
                         dataItem["qty"] = dataItem["qty"]-1;
-                        setOrderValue(orderValue-newItem["rate"]);
+                        if(state.seatingData.type === "Zomato" || state.seatingData.type === "Swiggy"){
+                            setOrderValue(orderValue-newItem["onlineRate"]);
+                        } else {
+                            setOrderValue(orderValue-newItem["rate"]);
+                        }
+                        
                     }
                 }
-                dataItem["price"] = dataItem["rate"]*dataItem["qty"];
+                if(state.seatingData.type === "Zomato" || state.seatingData.type === "Swiggy"){
+                    dataItem["price"] = dataItem["onlineRate"]*dataItem["qty"];
+                } else {
+                    dataItem["price"] = dataItem["rate"]*dataItem["qty"];
+                }
                 if(dataItem["qty"] > 0){
                     newTableData.push(newItem);
                 }
@@ -113,14 +128,22 @@ function Billing() {
 
     function handleItemClick(item){
         let newItem = item;
-        setOrderValue(orderValue+newItem["rate"]);
+        if(state.seatingData.type === "Zomato" || state.seatingData.type === "Swiggy"){
+            setOrderValue(orderValue+newItem["onlineRate"]);
+        } else {
+            setOrderValue(orderValue+newItem["rate"]);
+        }
         var isItemExist = false;
         var newTableData = [];
         kotTableData.forEach(dataItem => {
             console.log(dataItem);
             if(dataItem.itemCode === newItem.itemCode){
                 dataItem["qty"] = dataItem["qty"]+1;
-                dataItem["price"] = dataItem["rate"]*dataItem["qty"];
+                if(state.seatingData.type === "Zomato" || state.seatingData.type === "Swiggy"){
+                    dataItem["price"] = dataItem["onlineRate"]*dataItem["qty"];
+                } else {
+                    dataItem["price"] = dataItem["rate"]*dataItem["qty"];
+                }
                 newTableData.push(newItem);
                 isItemExist = true;
                  
@@ -130,7 +153,11 @@ function Billing() {
         });
         if(!isItemExist){
             newItem["qty"] = 1;
-            newItem["price"] = newItem["rate"];
+            if(state.seatingData.type === "Zomato" || state.seatingData.type === "Swiggy"){
+                newItem["price"] = newItem["onlineRate"];
+            } else {
+                newItem["price"] = newItem["rate"];
+            }
             newTableData.push(newItem);
         }
         setTableData(newTableData);
@@ -161,6 +188,11 @@ function Billing() {
         }
     }
 
+    function handleRePrintKotButton(kot){
+        console.log("KOT");
+        console.log(kot);
+    }
+
     function handleKotCard(){
 
     }
@@ -173,7 +205,7 @@ function Billing() {
         <div className='my-container'>
             <Row>
                 <Col sm={2}>
-                <div className='categ-list'>
+                <div className={'categ-list '+ 'cursor-'+state.seatingData.status}>
                     <div className='categ-head'>Categories</div>
                     <ListGroup>
                         {categories.map((category, index) => {
@@ -224,6 +256,7 @@ function Billing() {
                                     <div className='no-print bill-title'>
                                         <div className='titlebold'>{'KOT'}</div>
                                         <div>{'Table: '}{state.seatingData.id}</div>
+                                        <div>{'Time: '}{new Date().toLocaleString()}</div>
                                     </div>
                                     <div className='border-bottom padd-bottom'>
                                         <MyTable data={kotTableData} columns={kotColumns}/>
@@ -255,7 +288,9 @@ function Billing() {
                                         </div>
                                     </div>
                                     ):
-                                    <div></div>
+                                    <div className='btn'>
+                                        <Button onClick={handleBack}>Back</Button>
+                                    </div>
                                 }
                             </div>
                         </Tab>
@@ -263,9 +298,29 @@ function Billing() {
                             <div className='item-scroll'>
                                 <Row>
                                 {state?state.kotData.map((kot)=>{
+                                    console.log(kot);
                                     let dateTime = new Date(kot.createdAt);
                                     return(
                                         <div>
+                                            <div className='no-print ticket' ref={el=>(componentRef=el)}>
+                                                <div className='no-print bill-title'>
+                                                    <div className='titlebold'>{'KOT'}</div>
+                                                    <div>{'Table: '}{state.seatingData.id}</div>
+                                                </div>
+                                                <div className='border-bottom padd-bottom'>
+                                                    <MyTable data={kot.kotItems} columns={kotColumns}/>
+                                                </div>
+                                            </div>
+                                            <div className='button-div'>
+                                                <ReactToPrint 
+                                                    trigger={()=>{
+                                                        return <Button id="reprint-kot">Print KOT</Button>
+                                                    }}
+                                                    content={()=>componentRef}
+                                                    pageStyle="print"
+                                                    onBeforePrint={handleRePrintKotButton(kot)}
+                                                />
+                                            </div>
                                         <Card onClick={handleKotCard}>
                                             <Card.Header>{dateTime.toLocaleTimeString()}</Card.Header>
                                             <Card.Body>

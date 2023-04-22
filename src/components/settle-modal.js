@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
-import { Form } from "react-bootstrap";
+import { Form, Row, Col } from 'react-bootstrap';
 import {settle} from '../utils/billingUtils'
 
 function SettleModalContent(props) {
     const [modeOfPay, setModeOfPay] = useState("CASH");
+    const [onlineComponent, setOnlineComponent] = useState();
+    const [cashComponent, setCashComponent] = useState();
 
     function handlePaymentModeRadioChange(e){
         setModeOfPay(e.target.value);
@@ -13,7 +15,29 @@ function SettleModalContent(props) {
 
     async function handleSettleBill(){
         document.getElementById("settle-bill").disabled = true;
-        let settleBillRes = await settle(props.table, modeOfPay);
+        let settlementDetails = []
+        if(cashComponent > props.table.orderValue){
+            alert("Zada Hoshiyar Ho kya???");
+        } else {
+            if(modeOfPay === "SPLIT"){
+                settlementDetails.push({
+                    "paymentMode": "CASH",
+                    "amount": cashComponent - 0
+                });
+                settlementDetails.push({
+                    "paymentMode": "ONLINE",
+                    "amount": props.table.orderValue - cashComponent
+                });
+            } else {
+                settlementDetails.push(
+                    {
+                        "paymentMode": modeOfPay,
+                        "amount": props.table.orderValue
+                    }
+                );
+            }
+            await settle(props.table, settlementDetails);
+        }
         props.close();
         props.reload();
     }
@@ -44,7 +68,38 @@ function SettleModalContent(props) {
                             onChange={handlePaymentModeRadioChange}
                             checked={modeOfPay === "ONLINE"}
                             />
+                            <Form.Check
+                            value="SPLIT"
+                            type="radio"
+                            aria-label="radio 3"
+                            label="Split"
+                            onChange={handlePaymentModeRadioChange}
+                            checked={modeOfPay === "SPLIT"}
+                            />
                         </Form.Group>
+                        {(modeOfPay === "SPLIT")?
+                            (<Row className="mb-3">
+                            <Form.Group as={Col} controlId="cash" className="mb-3">
+                            <Form.Label>Cash*</Form.Label>
+                                <Form.Control
+                                type="number"
+                                value={cashComponent}
+                                onChange={(event) => setCashComponent(event.target.value)}
+                                required
+                                />
+                            </Form.Group>
+                            <Form.Group as={Col} controlId="online" className="mb-3">
+                                <Form.Label>Online*</Form.Label>
+                                <Form.Control
+                                type="number"
+                                disabled='true'
+                                value={props.table.orderValue - cashComponent}
+                                required
+                                />
+                            </Form.Group>
+                        </Row>
+                        ):<div></div>
+                        }
                     </form>
                 </div>
             </Modal.Body>

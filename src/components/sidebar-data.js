@@ -21,5 +21,11 @@ export const SidebarData = [
     path: "/invoice",
     icon: <IoIcons.IoIosPaper />,
     cName: "nav-text",
+  },
+  {
+    title: "Add Item",
+    path: "/addItem",
+    icon: <IoIcons.IoIosPaper />,
+    cName: "nav-text",
   }
 ];

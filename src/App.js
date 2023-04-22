@@ -11,6 +11,7 @@ import Login from "./routes/Login";
 import Invoice from "./routes/Invoice";
 import Billing from "./routes/Billing";
 import TableView from "./routes/TableView";
+import ItemAdd from "./routes/ItemAdd";
 import {AppContext} from "./context"
 import Axios from 'axios';
 
@@ -96,6 +97,10 @@ function App(){
                 {
                     path: "/invoice",
                     element: <Invoice />
+                },
+                {
+                    path: "/addItem",
+                    element: <ItemAdd />
                 },
                 {
                     path: "/stock",

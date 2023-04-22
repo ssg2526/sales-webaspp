@@ -182,7 +182,7 @@ export function doBill(items, table_id, customerDetails, discount){
     return Axios.post(url, body, {params:{tableId: table_id}, headers: headers});
 }
 
-export function settle(table, paymentMode){
+export function settle(table, settlementDetails){
     const url = "http://localhost:8080/restaurant/api/v1/settle"
     const headers = {
         'Content-Type': 'application/json',
@@ -190,13 +190,7 @@ export function settle(table, paymentMode){
     }
     let body = {}
     body["totalAmount"] = table.orderValue;
-    body["settlementDetails"] = [
-        {
-            "paymentMode": paymentMode,
-            "amount": table.orderValue
-        }
-    ]
-
+    body["settlementDetails"] = settlementDetails;
+    console.log(body);
     return Axios.post(url, body, {params:{tableId: table.id}, headers: headers});
-
 }

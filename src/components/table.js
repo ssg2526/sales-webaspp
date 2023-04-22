@@ -19,7 +19,7 @@ function MyTable(props){
         // console.log(item);
         return <tr key={item.id}>
             {props.columns.map((columnItem, index) => {
-                if(columnItem.field == 'qty' && columnItem.type === 'buttons'){
+                if(columnItem.field === 'qty' && columnItem.type === 'buttons'){
                     return <td key={index}> <button onClick={()=>props.handleQty(item, false)} className='qtyBtn'>{'-'}</button> {item[`${columnItem.field}`]} <button onClick={()=>props.handleQty(item, true)} className='qtyBtn'>{'+'}</button> </td>
                 }else{
                     return <td key={index}>{item[`${columnItem.field}`]}</td>

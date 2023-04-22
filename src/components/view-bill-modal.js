@@ -107,7 +107,7 @@ function ViewBillModalContent(props){
         if(customerContact){
             addCustomer(customerDetails);
         }
-        // let invoice_resp = await doBill(kotTableData, props.table.id, customerDetails, discount);
+        let invoice_resp = await doBill(kotTableData, props.table.id, customerDetails, discount);
     }
 
     let componentRef = useRef(null);

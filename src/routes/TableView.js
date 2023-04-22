@@ -40,19 +40,18 @@ function TableView(){
     }, [ignored]);
 
     async function handleTableClick(table){
-        if(table.status !== 2){
-            let kot_data = []
-            if(table.orderId){
-                let res = await getAllKotsForOrder(table.orderId);
-                kot_data = res.data;
-            }
-            navigate('billing', {
-                state: {
-                    seatingData: table,
-                    kotData: kot_data
-                }
-            });
+        console.log(table);
+        let kot_data = []
+        if(table.orderId){
+            let res = await getAllKotsForOrder(table.orderId);
+            kot_data = res.data;
         }
+        navigate('billing', {
+            state: {
+                seatingData: table,
+                kotData: kot_data
+            }
+        });
     }
 
     function handleSettleClick(table){
