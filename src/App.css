@@ -220,9 +220,17 @@
   margin: 0px 10px;
 }
 
+.mycard-bottom {
+  text-align: center;
+  border-top: 1px solid;
+  font-size: small;
+  margin: 0px 10px;
+  padding-bottom: 2px;
+}
+
 .mycard-body {
   text-align: center;
-  padding-top: 19px;
+  padding: 8px;
   font-weight: 700;
 }
 
@@ -278,6 +286,9 @@
   cursor: pointer;
   word-wrap: break-word;
   overflow: auto;
+  font-size: x-small;
+  vertical-align: middle;
+  text-align: center;
 }
 
 .item-card:hover{

@@ -72,11 +72,19 @@ function Billing() {
     }
 
     function handleItemName(e){
-        setItemName(e.target.value)
-        console.log("search: "+ itemName)
+        let itemVal = e.target.value;
+        setItemName(itemVal);
+        let finalItems = [];
+        menuItems.forEach((item)=>{
+            if(item.name.toLowerCase().includes(itemVal.toLowerCase())){
+                finalItems.push(item);
+            }
+        });
+        setitemData(finalItems);
     }
 
     function handleCatClick(category){
+        setItemName("");
         let categoryItems = []
         menuItems.forEach((item)=>{
             if(item.categoryId === category.id){
@@ -220,8 +228,8 @@ function Billing() {
                 </Col>
 
                 <Col sm={4}> 
-                <input onChange={(e)=>handleItemCode(e)} 
-                    onKeyUp={_handleKeyUp} id="itemCode" value={itemCode} placeholder='Item Code' type="text" />
+                {/* <input onChange={(e)=>handleItemCode(e)} 
+                    onKeyUp={_handleKeyUp} id="itemCode" value={itemCode} placeholder='Item Code' type="text" /> */}
                 <input onChange={(e)=>handleItemName(e)} 
                     onClick={unsetItemCode} id="name" value={itemName} placeholder='Name' type="text" />
                 {/* <button>Search</button> */}
