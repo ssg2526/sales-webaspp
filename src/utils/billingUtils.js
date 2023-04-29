@@ -168,8 +168,8 @@ export function doBill(items, table_id, customerDetails, discount){
         invoiceItem["uom"] = item["uom"];
         invoiceItem["qty"] = item["qty"];
         invoiceItem["discountPer"] = item["discountPer"];
-        invoiceItem["sellingPrice"] = item["sellingPrice"];
-        billAmount += item["sellingPrice"];
+        invoiceItem["sellingPrice"] = item["amount"];
+        billAmount += item["amount"];
         invoiceItems.push(invoiceItem);
     });
     if(customerDetails["contact"]){

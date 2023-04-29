@@ -30,6 +30,7 @@ function Billing() {
     const navigate = useNavigate();
     const {categories, menuItems, itemMap} = useContext(AppContext)
     let componentRef = useRef(null);
+    let componentRef2 = useRef(null);
     const columns = [
         {title: "Item Code", field: 'itemCode', type:'text'},
         {title: "Item", field: 'name', type:'text'},
@@ -190,9 +191,6 @@ function Billing() {
         if(kotTableData.length){
             let kot_resp = await doKot(kotTableData, state.seatingData.id);
             state.seatingData = kot_resp.data;
-            console.log(kot_resp.data);
-            // let table_res = await updateSeatingData(state.seatingData, 1, order_id, orderValue);
-            // navigate("/tables")
         }
     }
 
@@ -260,7 +258,7 @@ function Billing() {
                                 <div className='ord-total'>
                                     <span>Total : {orderValue}</span>
                                 </div>
-                                <div className='no-print ticket' ref={el=>(componentRef=el)}>
+                                <div className='no-print ticket' ref={el=>(componentRef2=el)}>
                                     <div className='no-print bill-title'>
                                         <div className='titlebold'>{'KOT'}</div>
                                         <div>{'Table: '}{state.seatingData.id}</div>
@@ -284,7 +282,7 @@ function Billing() {
                                                 trigger={()=>{
                                                     return <Button id="print-kot" disabled={!kotTableData.length?true:false}>Print KOT</Button>
                                                 }}
-                                                content={()=>componentRef}
+                                                content={()=>componentRef2}
                                                 pageStyle="print"
                                                 onBeforePrint={handlePrintKotButton}
                                                 onAfterPrint={handleBack}

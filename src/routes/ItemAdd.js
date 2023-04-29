@@ -14,6 +14,7 @@ function ItemForm() {
     const {categories} = useContext(AppContext)
 
   const handleSubmit = (event) => {
+    document.getElementById("item-add-button").disabled = true;
     event.preventDefault();
     const url = "http://localhost:8080/item-service/api/v1/addItem"
     const headers = {
@@ -114,7 +115,7 @@ function ItemForm() {
             </Form.Select>
         </Form.Group>
       </Row>
-      <Button type="submit" variant="primary">
+      <Button id="item-add-button" type="submit" variant="primary">
         Submit
       </Button>
     </Form>
